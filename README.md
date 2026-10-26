@@ -23,65 +23,72 @@ logic_gates_tb.v	All input combinations and VCD generation
  # Verilog  Program
  ```
 module basic_gates (
-
-    input  wire a,
-
-    input  wire b,
-
+    input wire a,
+    input wire b,
     output wire y_and,
-
     output wire y_or,
-
-    output wire y_not
-
+    output wire y_not,
+    output wire y_nand,
+    output wire y_nor,
+    output wire y_xor
 );
 
-
-    assign y_and = a & b;   // AND gate
-
-    assign y_or  = a | b;   // OR gate
-
-    assign y_not = ~a;      // NOT gate (inverter)
-
+    assign y_and  = a & b;   // AND gate
+    assign y_or   = a | b;   // OR gate
+    assign y_not  = ~a;      // NOT gate
+    assign y_nand = ~(a & b); // NAND gate
+    assign y_nor  = ~(a | b); // NOR gate
+    assign y_xor  = a ^ b;   // XOR gate
 
 endmodule
-
 ```
+
 
 # **Test Bench Program**
 ```
 module tb2;
 
     reg a, b;
-    wire y_and, y_or, y_not;
 
-    // Instantiate the design under test (DUT)
+    wire y_and, y_or, y_not;
+    wire y_nand, y_nor, y_xor;
+
+    // Instantiate the design under test
     basic_gates uut (
         .a(a),
         .b(b),
         .y_and(y_and),
         .y_or(y_or),
-        .y_not(y_not)
+        .y_not(y_not),
+        .y_nand(y_nand),
+        .y_nor(y_nor),
+        .y_xor(y_xor)
     );
 
     initial begin
-        // ---- VCD dump setup ----
-        $dumpfile("basic_gates.vcd"); // name of the VCD file to be generated
-        $dumpvars(0, tb2); // dump all signals in this testbench hierarchy
+        // VCD dump setup
+        $dumpfile("logic_gates.vcd");
+        $dumpvars(0, tb2);
 
-        // ---- Apply all 4 input combinations ----
-        $monitor("Time=%0t a=%b b=%b | AND=%b OR=%b NOT(a)=%b", $time, a, b, y_and, y_or, y_not);
+        // Display all gate outputs
+        $monitor(
+            "Time=%0t a=%b b=%b | AND=%b OR=%b NOT=%b NAND=%b NOR=%b XOR=%b",
+            $time, a, b,
+            y_and, y_or, y_not,
+            y_nand, y_nor, y_xor
+        );
 
+        // All four input combinations
         a = 0; b = 0; #10;
         a = 0; b = 1; #10;
         a = 1; b = 0; #10;
         a = 1; b = 1; #10;
 
         #10 $finish;
-#10;
     end
 
 endmodule
+
 ```
 
 
@@ -136,30 +143,12 @@ Y_OR = A+B
 Y_NOT = A'
 The design was compiled and simulated using Synopsys VCS, and the functionality was verified using DVE waveform analysis, matching the expected truth table.
 Output
+<img width="1920" height="1080" alt="Screenshot (27)" src="https://github.com/user-attachments/assets/6f7e5782-c6cf-4032-a1d3-27106b6ce6d5" />
+
 # OUTPUT
-<img width="1920" height="1080" alt="Screenshot (24)" src="https://github.com/user-attachments/assets/b1d5359f-c9e6-49be-8121-c231b7b48240" />
+<img width="1920" height="1080" alt="Screenshot (30)" src="https://github.com/user-attachments/assets/3af24671-a626-4f8b-9571-c0a7d2ec69f7" />
+
 
 
 
  
-# Viva-Voce Questions
-
-•	What is a logic gate?
-
-•	What are the basic logic gates in digital electronics?
-
-•	What is the Boolean expression for an AND gate? An OR gate? A NOT gate?
-
-•	Why is the NOT gate also called an inverter?
-
-•	What is a universal gate, and how can NAND/NOR realize AND, OR, and NOT?
-
-•	What is the purpose of a Verilog testbench?
-
-•	Why is a VCD file generated?
-
-•	What is the purpose of ./simv?
-•	What is the purpose of DVE?
-•	What is the difference between simulation and synthesis?
-•	What is the difference between $dumpfile and $dumpvars?
-
